@@ -37,15 +37,12 @@ app.get("/", async (req, res) => {
 
 app.post("/add", async(req, res)=>{
   const inputCountry = req.body.country.trim();
-
-
-  "SELECT country_code FROM countries WHERE LOWER(country_name) LIKE '%' || $1 || '%';",
-      [input.toLowerCase()]
   const result = await db.query(
     "SELECT country_code FROM country WHERE LOWER(country_name) like '%' || $1 || '%';",
     [inputCountry.toLowerCase()]
   );
   console.log(result.rows);
+  
   if (result.rows.length !== 0){
     const countryCode = result.rows[0].country_code;
     if (!visited_countries.includes(countryCode))
