@@ -13,7 +13,7 @@ app.use(express.static("public"));
 const db = new pg.Client({
   user: "postgres",
   host: "localhost",
-  database: "world",
+  database: "world", //this database will includes
   password: "password",
   port: 5433
 });
@@ -22,10 +22,13 @@ db.connect()
 let visited_countries = [];
 let num_country;
 let currentUserId = 1;
-let users = [
-  { id: 1, name: "Angela", color: "teal" },
-  { id: 2, name: "Jack", color: "powderblue" },
-];
+let page_users = [];
+
+// let page_users = [    //we can give page_users some initial value before using the values from database
+//   { id: 1, name: "Angela", color: "teal" },
+//   { id: 2, name: "Jack", color: "powderblue" },
+// ];
+
 
 // handle database retrieval
 app.get("/", async (req, res) => {
@@ -37,10 +40,14 @@ app.get("/", async (req, res) => {
   num_country = visited_countries.length;
   console.log(visited_countries);
   // console.log(result.rows);
+
+  const result2 = await db.query("SELECT * FROM page_user");
+  page_users = result2.rows;
+
   res.render("index.ejs", {
     countries: visited_countries, 
     total: num_country,
-    users: users,
+    users: page_users,
     color: "teal"})
 });
 
@@ -63,7 +70,7 @@ app.post("/add", async(req, res)=>{
       countries: visited_countries,
       total: visited_countries.length,
       error: "Country name does not exist, try again.",
-      users: users,
+      users: page_users,
       color: "teal"
     });
   }
