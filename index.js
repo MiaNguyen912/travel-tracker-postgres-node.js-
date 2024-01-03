@@ -21,6 +21,11 @@ db.connect()
 
 let visited_countries = [];
 let num_country;
+let currentUserId = 1;
+let users = [
+  { id: 1, name: "Angela", color: "teal" },
+  { id: 2, name: "Jack", color: "powderblue" },
+];
 
 // handle database retrieval
 app.get("/", async (req, res) => {
@@ -32,7 +37,11 @@ app.get("/", async (req, res) => {
   num_country = visited_countries.length;
   console.log(visited_countries);
   // console.log(result.rows);
-  res.render("index.ejs", {countries: visited_countries, total: num_country})
+  res.render("index.ejs", {
+    countries: visited_countries, 
+    total: num_country,
+    users: users,
+    color: "teal"})
 });
 
 app.post("/add", async(req, res)=>{
@@ -42,7 +51,7 @@ app.post("/add", async(req, res)=>{
     [inputCountry.toLowerCase()]
   );
   console.log(result.rows);
-  
+
   if (result.rows.length !== 0){
     const countryCode = result.rows[0].country_code;
     if (!visited_countries.includes(countryCode))
@@ -54,6 +63,8 @@ app.post("/add", async(req, res)=>{
       countries: visited_countries,
       total: visited_countries.length,
       error: "Country name does not exist, try again.",
+      users: users,
+      color: "teal"
     });
   }
   
