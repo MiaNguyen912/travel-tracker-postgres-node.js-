@@ -22,6 +22,7 @@ db.connect()
 let visited_countries = [];
 let color;
 let num_country;
+let currentUser;
 let currentUserId = 1;
 let page_users = [];
 
@@ -47,15 +48,17 @@ async function getCurrentUser() {
 
 // handle database retrieval
 app.get("/", async (req, res) => {
-  
   visited_countries = await checkVisistedCountries();
-  const currentUser = await getCurrentUser();
+  currentUser = await getCurrentUser();
 
   res.render("index.ejs", {
     countries: visited_countries, 
     total: visited_countries.length,
     users: page_users,
-    color: currentUser.color})
+    color: currentUser.color
+  });
+
+  
 });
 
 app.post("/add", async(req, res)=>{
@@ -88,6 +91,7 @@ app.post("/user", async (req, res) => {
     res.render("new.ejs");
   } else {
     currentUserId = req.body.user;
+    console.log(currentUserId);
     res.redirect("/");
   }
 });
@@ -102,6 +106,19 @@ app.post("/new", async (req, res) => {
   console.log(currentUserId);
   res.redirect("/");
 });
+
+app.post("/delete", async (req, res)=>{
+  if (req.body.delete === "delete") {
+    console.log(`Delete user ${currentUser.name}`);
+    await db.query("DELETE FROM visited_country WHERE user_id=$1;", [currentUserId]);
+    await db.query("DELETE FROM page_user WHERE id = $1;", [currentUserId]);
+
+  };
+  const result = await db.query("select id from page_user where id = (select min(id) from page_user)");
+  currentUserId = result.rows[0].id; //render the first user after delete current user
+  res.redirect("/");
+  
+})
 
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
