@@ -24,8 +24,11 @@
   
   <form action="/add" method="post">
     <input type="text" name="country" autofocus placeholder="<%= locals.error ? error :  'Enter country name'%>">
-    <button type="submit">Add</button>
+    <button type="submit" name="addCountry" value="add">Add</button>
+    <button type="submit" name="deleteCountry" value="delete">Delete</button>
+
   </form>
+
 
   <section class="ag-canvas">
     <svg class="ag-canvas_svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -386,7 +389,7 @@
   </section>
   <h2 class="total-count">Total Countries: <%=total%></h2>
 
-  <form action="/delete" method="post">
+  <form action="/deleteuser" method="post">
     <button class="delete-button" type="submit" name="delete" value="delete">Delete user</button>
   </form>
 

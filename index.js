@@ -70,9 +70,13 @@ app.post("/add", async(req, res)=>{
 
   if (result.rows.length !== 0){
     const countryCode = result.rows[0].country_code;
-    if (!visited_countries.includes(countryCode))
-      await db.query("INSERT INTO visited_country(country_code, user_id) VALUES ($1, $2)",
-      [countryCode, currentUserId]);
+
+    if (req.body.deleteCountry === "delete" && visited_countries.includes(countryCode)) {
+      await db.query("DELETE FROM visited_country WHERE country_code=$1 and user_id=$2;", [countryCode, currentUserId]);
+    } else if (req.body.addCountry === "add" && !visited_countries.includes(countryCode)) {
+      await db.query("INSERT INTO visited_country(country_code, user_id) VALUES ($1, $2)", [countryCode, currentUserId]);
+    };
+      
     res.redirect("/");
   } else {
     res.render("index.ejs", {
@@ -83,8 +87,7 @@ app.post("/add", async(req, res)=>{
       color: color
     });
   }
-  
-})
+});
 
 app.post("/user", async (req, res) => {
   if (req.body.add === "new") {
@@ -107,7 +110,7 @@ app.post("/new", async (req, res) => {
   res.redirect("/");
 });
 
-app.post("/delete", async (req, res)=>{
+app.post("/deleteuser", async (req, res)=>{
   if (req.body.delete === "delete") {
     console.log(`Delete user ${currentUser.name}`);
     await db.query("DELETE FROM visited_country WHERE user_id=$1;", [currentUserId]);
